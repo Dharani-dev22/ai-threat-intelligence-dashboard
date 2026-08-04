@@ -6,11 +6,14 @@ function App() {
   const [textContent, setTextContent] = useState('')
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleAnalyze = async (e) => {
     e.preventDefault()
     setLoading(true)
-    
+    setErrorMessage('')
+    setResults(null)
+
     try {
       const response = await fetch('https://ai-threat-intelligence-dashboard.onrender.com/analyze', {
         method: 'POST',
@@ -19,10 +22,16 @@ function App() {
         },
         body: JSON.stringify({ url, text_content: textContent }),
       })
+
+      if (!response.ok) {
+        throw new Error(`Server returned status: ${response.status}`)
+      }
+
       const data = await response.json()
       setResults(data)
     } catch (error) {
       console.error(error)
+      setErrorMessage(error.message || 'Failed to connect to threat intelligence network.')
     } finally {
       setLoading(false)
     }
@@ -37,7 +46,7 @@ function App() {
       return { level: 'ERROR', score: 0, isNegative: false }
     }
     const isNegative = topPrediction.label === 'NEGATIVE'
-    const scorePercent = Math.round(topPrediction.score * 100)
+    const scorePercent = Math.round((topPrediction.score || 0) * 100)
     return {
       level: isNegative && scorePercent > 60 ? 'HIGH' : isNegative ? 'MEDIUM' : 'LOW',
       score: scorePercent,
@@ -105,6 +114,12 @@ function App() {
           {loading ? 'Scanning Intelligence Network...' : 'Analyze Threat'}
         </button>
       </form>
+
+      {errorMessage && (
+        <div style={{ padding: '12px', marginTop: '16px', borderRadius: '8px', backgroundColor: '#fee2e2', color: '#991b1b', textAlign: 'center' }}>
+          <strong>Error:</strong> {errorMessage}
+        </div>
+      )}
 
       {results && (
         <div className="dashboard-results">
