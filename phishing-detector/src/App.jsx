@@ -68,8 +68,8 @@ function App() {
 
   const aiRisk = results ? getAiRisk() : null
   const vtStats = results ? getVtStats() : null
-
- const getOverallStatus = () => {
+    
+  const getOverallStatus = () => {
     if (!results) return null
     
     if ((aiRisk?.isNegative && aiRisk?.score > 70) || vtStats?.malicious > 2) {
@@ -127,7 +127,7 @@ function App() {
       {results && (
        <div className="dashboard-results">
         <div className="status-banner" style={{ backgroundColor: overallStatus.bg, borderColor: overallStatus.color }}>
-          <h2 style={{ color: overallStatus.color, margin: 0 }}>{overallStatus.badge}</h2>
+        <h2 style={{ color: overallStatus.color, margin: 0 }}>{overallStatus.badge}</h2>
         </div>
 
           <div className="grid-container">
