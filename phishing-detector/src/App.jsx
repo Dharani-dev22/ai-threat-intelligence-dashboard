@@ -69,14 +69,17 @@ function App() {
   const aiRisk = results ? getAiRisk() : null
   const vtStats = results ? getVtStats() : null
 
-  const getOverallStatus = () => {
+ const getOverallStatus = () => {
     if (!results) return null
-    if ((aiRisk?.isNegative && aiRisk?.score > 70) || vtStats?.malicious > 0) {
+    
+    if ((aiRisk?.isNegative && aiRisk?.score > 70) || vtStats?.malicious > 2) {
       return { badge: 'CRITICAL THREAT DETECTED', bg: '#fee2e2', color: '#991b1b' }
     }
-    if (aiRisk?.isNegative || vtStats?.suspicious > 0 || vtStats?.reputation < 0) {
+    
+    if (aiRisk?.isNegative || vtStats?.suspicious > 0 || vtStats?.malicious > 0 || vtStats?.reputation < 0) {
       return { badge: 'SUSPICIOUS ACTIVITY FLAGGED', bg: '#fef3c7', color: '#92400e' }
     }
+    
     return { badge: 'SAFE / LOW RISK', bg: '#dcfce7', color: '#166534' }
   }
 
@@ -122,10 +125,10 @@ function App() {
       )}
 
       {results && (
-        <div className="dashboard-results">
-          <div className="status-banner" style={{ backgroundColor: overallStatus.bg, color: overallStatus.color, borderColor: overallStatus.color }}>
-            <h2>{overallStatus.badge}</h2>
-          </div>
+       <div className="dashboard-results">
+        <div className="status-banner" style={{ backgroundColor: overallStatus.bg, borderColor: overallStatus.color }}>
+          <h2 style={{ color: overallStatus.color, margin: 0 }}>{overallStatus.badge}</h2>
+        </div>
 
           <div className="grid-container">
             <div className="card">
